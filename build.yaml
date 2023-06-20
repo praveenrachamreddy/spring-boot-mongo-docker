@@ -20,6 +20,6 @@ spec:
   output:
     to:
       kind: ImageStreamTag
-      name: app1:latest
+      name: app1:v1
   runPolicy: Serial
 
