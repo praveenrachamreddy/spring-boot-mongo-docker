@@ -1,0 +1,25 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: app1
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: app1
+spec:
+  source:
+    type: Git
+    git:
+      uri: https://github.com/imss-co-in/spring-boot-mongo-docker.git
+      ref: master
+    contextDir: /
+  strategy:
+    dockerStrategy:
+    type: Docker
+  output:
+    to:
+      kind: ImageStreamTag
+      name: app1:latest
+  runPolicy: Serial
+
