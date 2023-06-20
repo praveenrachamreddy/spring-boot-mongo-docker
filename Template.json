@@ -43,11 +43,10 @@
                            }
                     },
                     "source": {
-                           "type": "Git"
-                           "git":
-                              "uri": https://github.com/imss-co-in/spring-boot-mongo-docker.git
-                              "ref": master
-                              "contextDir": /
+                           "type": "Git",          
+                           "uri": "https://github.com/imss-co-in/spring-boot-mongo-docker.git",
+                           "ref": "master",
+                           "contextDir": "/"
                     },
                     "strategy": {
                         "dockerStrategy": {
@@ -55,7 +54,7 @@
                         }
                     }
                  }
-              },
+              }
       ],
       "parameters": [
                  {
