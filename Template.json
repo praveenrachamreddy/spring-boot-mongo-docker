@@ -1,0 +1,72 @@
+{
+     "kind": "Template",
+     "apiVersion": "v1",
+     "metadata": {
+        "name": "${NAME}",
+        "annotations": {
+             "tags": "${NAME}",
+             "iconClass": "icon-${NAME}",
+             "openshift.io/provider-display-name": "${NAME}-app"
+        }
+      },
+      "labels": {
+          "template": "${NAME}",
+          "app": "${NAME}"
+      },
+      "objects": [
+              {
+                 "apiVersion": "v1",
+                 "kind": "ImageStream",
+                 "metadata": {
+                     "name": "${NAME}"
+                 },
+                 "spec": {
+                     "lookupPolicy": {
+                            "local": false
+                     }
+                 }
+              },
+              {
+                 "apiVersion": "v1",
+                 "kind": "BuildConfig",
+                 "metadata": {
+                          "labels": {
+                              "app": "${NAME}"
+                          },
+                          "name": "${NAME}"
+                 },
+                 "spec": {
+                    "output": {
+                           "to": {
+                                "kind": "ImageStreamTag",
+                                "name": "${NAME}:latest"
+                           }
+                    },
+                    "source": {
+                           "type": "Git"
+                           "git":
+                              "uri": https://github.com/imss-co-in/spring-boot-mongo-docker.git
+                              "ref": master
+                              "contextDir": /
+                    },
+                    "strategy": {
+                        "dockerStrategy": {
+                                     "type": "Source"
+                        }
+                    }
+                 }
+              },
+      ],
+      "parameters": [
+                 {
+                    "name": "NAME",
+                    "displayName": "Name",
+                    "required": true,
+                    "description": "name of the application"
+                 }
+      ]
+}          
+
+
+
+
