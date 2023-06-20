@@ -21,9 +21,9 @@
         "source": {
           "type": "Git",
           "git": {
-            "uri": "https://github.com/example/repo.git"
+            "uri": "https://github.com/imss-co-in/spring-boot-mongo-docker.git"
           },
-          "contextDir": "/path/to/source"
+          "contextDir": "/"
         },
         "strategy": {
           "type": "Docker",
