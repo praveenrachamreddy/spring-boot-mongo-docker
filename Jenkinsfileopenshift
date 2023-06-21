@@ -51,6 +51,38 @@ pipeline{
                 }
             }
         }
+        stage('Delete resources') {
+            steps {
+                script {
+                    openshift.withCluster() {
+                        openshift.withProject('jenkins') {
+                            def buildConfigName = env.NAME
+    
+                            // Delete the BuildConfig
+                            def buildConfig = openshift.selector('bc', [name: buildConfigName])
+                            if (buildConfig.exists()) {
+                                buildConfig.delete()
+                                echo "Deleted BuildConfig: ${buildConfigName}"
+                            }
+    
+                            // Delete the ImageStream
+                            def imageStream = openshift.selector('is', [name: buildConfigName])
+                            if (imageStream.exists()) {
+                                imageStream.delete()
+                                echo "Deleted ImageStream: ${buildConfigName}"
+                            }
+    
+                            // Wait for deletion to complete
+                            while (buildConfig.exists() || imageStream.exists()) {
+                                sleep 5
+                            }
+    
+                            echo "Resources deleted successfully"
+                        }
+                    }
+                }    
+            }
+        }
         stage('Build') {
             steps {
                script {
