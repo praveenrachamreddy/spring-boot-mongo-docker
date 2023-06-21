@@ -2,9 +2,9 @@
   "apiVersion": "template.openshift.io/v1",
   "kind": "Template",
   "metadata": {
-    "name": "my-build-template",
+    "name": "${NAME}",
     "labels": {
-      "app": "my-app"
+      "app": "${NAME}"
       }
   },
   "objects": [
@@ -12,9 +12,9 @@
       "apiVersion": "build.openshift.io/v1",
       "kind": "BuildConfig",
       "metadata": {
-        "name": "my-docker-build",
+        "name": "${NAME}",
         "labels": {
-          "app": "my-app"
+          "app": "${NAME}"
         }
       },
       "spec": {
@@ -34,7 +34,7 @@
         "output": {
           "to": {
             "kind": "ImageStreamTag",
-            "name": "my-app:latest"
+            "name": "${NAME}:latest"
           }
         }
       }
@@ -43,11 +43,19 @@
       "apiVersion": "image.openshift.io/v1",
       "kind": "ImageStream",
       "metadata": {
-        "name": "my-app",
+        "name": "${NAME}",
         "labels": {
-          "app": "my-app"
+          "app": "${NAME}"
         }
       }
     }
-  ]
+  ],
+  "parameters": [
+      {
+       "name": "NAME",
+       "displayName": "Name",
+       "required": true,
+       "description": "name of the application"
+      }
+  ] 
 }
