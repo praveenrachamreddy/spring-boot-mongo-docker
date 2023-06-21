@@ -20,38 +20,7 @@ pipeline{
              }
           
         }
-        stage(buildconfigtemp){
-            steps{
-                script{
-                    try{
-                      openshift.withCluster() {
-                        openshift.withProject(env.PROJECT) {
-                           echo "Using project: ${openshift.project()}"
-                           def templateSelector = openshift.selector( "template", "${NAME}")
-                           if(!openshift.selector("bc", [ template : "${NAME}"]).exists() || !openshift.selector("is", [ template : "${NAME}"]).exists())
-                           {
-                           if(openshift.selector("bc", [ template : "${NAME}"]).exists()){
-                           openshift.selector("bc", "${NAME}").delete();
-                           }
-                           if(openshift.selector("is", [ template : "${NAME}"]).exists()){
-                           openshift.selector("is", "${NAME}").delete();
-                           }
-                           openshift.newApp(templatePath, " -p NAME=${env.NAME} ")
-                           }
-                           else {
-                              echo "Using project: ${openshift.project()} , template already exists"
-                            }
-                        }
-                      }
-                    }
-                    catch( e ){
-                         echo e.getMessage()
-                          error "Deploy Template not successful."
-                    } 
-                }
-            }
-        }
-        stage('Delete resources') {
+                stage('Delete resources') {
             steps {
                 script {
                     openshift.withCluster() {
@@ -83,6 +52,38 @@ pipeline{
                 }    
             }
         }
+        stage(buildconfigtemp){
+            steps{
+                script{
+                    try{
+                      openshift.withCluster() {
+                        openshift.withProject(env.PROJECT) {
+                           echo "Using project: ${openshift.project()}"
+                           def templateSelector = openshift.selector( "template", "${NAME}")
+                           if(!openshift.selector("bc", [ template : "${NAME}"]).exists() || !openshift.selector("is", [ template : "${NAME}"]).exists())
+                           {
+                           if(openshift.selector("bc", [ template : "${NAME}"]).exists()){
+                           openshift.selector("bc", "${NAME}").delete();
+                           }
+                           if(openshift.selector("is", [ template : "${NAME}"]).exists()){
+                           openshift.selector("is", "${NAME}").delete();
+                           }
+                           openshift.newApp(templatePath, " -p NAME=${env.NAME} ")
+                           }
+                           else {
+                              echo "Using project: ${openshift.project()} , template already exists"
+                            }
+                        }
+                      }
+                    }
+                    catch( e ){
+                         echo e.getMessage()
+                          error "Deploy Template not successful."
+                    } 
+                }
+            }
+        }
+
         stage('Build') {
             steps {
                script {
