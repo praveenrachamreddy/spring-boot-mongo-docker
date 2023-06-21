@@ -20,7 +20,7 @@ pipeline{
              }
           
         }
-                stage('Delete resources') {
+        stage('Delete resources') {
             steps {
                 script {
                     openshift.withCluster() {
