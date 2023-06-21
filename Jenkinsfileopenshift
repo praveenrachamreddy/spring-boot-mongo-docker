@@ -36,7 +36,7 @@ pipeline{
                            if(openshift.selector("is", [ template : "${NAME}"]).exists()){
                            openshift.selector("is", "${NAME}").delete();
                            }
-                           openshift.newApp(templatePath)
+                           openshift.newApp(templatePath,[NAME: env.NAME])
                            }
                            else {
                               echo "Using project: ${openshift.project()} , template already exists"
