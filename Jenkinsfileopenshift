@@ -1,24 +1,24 @@
-
 def templatePath = "template.json"
 
-pipeline{
-    agent { label 'custommaven'}
-    environment {
-      PROJECT = "jenkins"
-      NAME = "springboot"
-      ENV = "dev"
+pipeline {
+    agent {
+        label 'custommaven'
     }
-    stages{
-        stage('checkout'){
-            steps{
+    environment {
+        PROJECT = "jenkins"
+        NAME = "springboot"
+        ENV = "dev"
+    }
+    stages {
+        stage('checkout') {
+            steps {
                 git 'https://github.com/praveenrachamreddy/spring-boot-mongo-docker.git'
             }
-        }    
-        stage('maven-build'){
-            steps{
+        }
+        stage('maven-build') {
+            steps {
                 sh 'mvn clean package'
-             }
-          
+            }
         }
         stage('Delete resources') {
             steps {
@@ -49,53 +49,48 @@ pipeline{
                             echo "Resources deleted successfully"
                         }
                     }
-                }    
-            }
-        }
-        stage(buildconfigtemp){
-            steps{
-                script{
-                    try{
-                      openshift.withCluster() {
-                        openshift.withProject(env.PROJECT) {
-                           echo "Using project: ${openshift.project()}"
-                           def templateSelector = openshift.selector( "template", "${NAME}")
-                           if(!openshift.selector("bc", [ template : "${NAME}"]).exists() || !openshift.selector("is", [ template : "${NAME}"]).exists())
-                           {
-                           if(openshift.selector("bc", [ template : "${NAME}"]).exists()){
-                           openshift.selector("bc", "${NAME}").delete();
-                           }
-                           if(openshift.selector("is", [ template : "${NAME}"]).exists()){
-                           openshift.selector("is", "${NAME}").delete();
-                           }
-                           openshift.newApp(templatePath, " -p NAME=${env.NAME} ")
-                           }
-                           else {
-                              echo "Using project: ${openshift.project()} , template already exists"
-                            }
-                        }
-                      }
-                    }
-                    catch( e ){
-                         echo e.getMessage()
-                          error "Deploy Template not successful."
-                    } 
                 }
             }
         }
-
+        stage('buildconfigtemp') {
+            steps {
+                script {
+                    try {
+                        openshift.withCluster() {
+                            openshift.withProject(env.PROJECT) {
+                                echo "Using project: ${openshift.project()}"
+                                def templateSelector = openshift.selector("template", "${NAME}")
+                                if (!openshift.selector("bc", [template: "${NAME}"]).exists() || !openshift.selector("is", [template: "${NAME}"]).exists()) {
+                                    if (openshift.selector("bc", [template: "${NAME}"]).exists()) {
+                                        openshift.selector("bc", "${NAME}").delete();
+                                    }
+                                    if (openshift.selector("is", [template: "${NAME}"]).exists()) {
+                                        openshift.selector("is", "${NAME}").delete();
+                                    }
+                                    openshift.newApp(templatePath, "-p NAME=${env.NAME}")
+                                } else {
+                                    echo "Using project: ${openshift.project()}, template already exists"
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        echo e.getMessage()
+                        error "Deploy Template not successful."
+                    }
+                }
+            }
+        }
         stage('Build') {
             steps {
-               script {
+                script {
                     openshift.withCluster() {
-                    openshift.withProject(env.PROJECT) {
-                        def buildConfigName = env.NAME 
-                        def build = openshift.selector('bc',[name: buildConfigName]).startBuild()
-                        echo "Build started. Build name: ${build.object().metadata.name}"
-                        sleep 10 // Optional: Wait for the build to start
+                        openshift.withProject(env.PROJECT) {
+                            def buildConfigName = env.NAME
+                            def build = openshift.selector('bc', [name: buildConfigName]).startBuild()
+                            echo "Build started. Build name: ${build.object().metadata.name}"
+                            sleep 10 // Optional: Wait for the build to start
+                        }
                     }
-                    }
-
                 }
             }
         }
