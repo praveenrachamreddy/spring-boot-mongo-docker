@@ -56,7 +56,7 @@ pipeline{
                script {
                     openshift.withCluster() {
                     openshift.withProject('jenkins') {
-                        def build = openshift.selector('bc'," -p NAME=${env.NAME} ").startBuild()
+                        def build = openshift.selector('bc'," NAME=${env.NAME} ").startBuild()
                         echo "Build started. Build name: ${build.object().metadata.name}"
                         sleep 10 // Optional: Wait for the build to start
                     }
