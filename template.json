@@ -56,7 +56,6 @@
        "displayName": "Name",
        "required": true,
        "description": "name of the application"
-       "value": "${NAME}"
       }
   ] 
 }
